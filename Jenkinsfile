@@ -1,27 +1,37 @@
-#!/usr/bin/env groovy
-
 pipeline {
-    agent none
+    agent any
+
     stages {
-        stage('build') {
+        stage('Test') {
             steps {
-                script {
-                    echo "Building the application..."
+                echo "testing the application..."
+                sh 'mvn test'
+            }
+    stages {
+        stage('Build Jar') {
+            steps {
+                echo "building the application..."
+                sh 'mvn package'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                echo "building the docker image..."
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    script {
+                        sh 'docker build -t anshu049/demo-app:jma-2.0 .'
+                        sh "echo $PASS | docker login -u $USER --password-stdin"
+                        sh 'docker push anshu049/demo-app:jma-2.0'
+                    }
                 }
             }
         }
-        stage('test') {
+
+        stage('Deploy App') {
             steps {
-                script {
-                    echo "Testing the application..."
-                }
-            }
-        }
-        stage('deploy') {
-            steps {
-                script {
-                    echo "Deploying the application..."
-                }
+                echo 'deploying the application...'
+                // Add your deployment steps here
             }
         }
     }
