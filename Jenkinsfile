@@ -7,7 +7,8 @@ pipeline {
                 echo "testing the application..."
                 sh 'mvn test'
             }
-    stages {
+        }
+        
         stage('Build Jar') {
             steps {
                 echo "building the application..."
@@ -35,3 +36,4 @@ pipeline {
             }
         }
     }
+}
