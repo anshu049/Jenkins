@@ -29,10 +29,16 @@ pipeline {
             }
         }
 
-        stage('Deploy App') {
+        stage('deploy') {
+            environment {
+               AWS_ACCESS_KEY_ID = credentials('access_key')
+               AWS_SECRET_ACCESS_KEY = credentials('secret_access_key')
+            }
             steps {
-                echo 'deploying the application...'
-                // Add your deployment steps here
+                script {
+                   echo 'deploying docker image...'
+                   sh 'kubectl create deployment nginx-deployment --image=nginx'
+                }
             }
         }
     }
